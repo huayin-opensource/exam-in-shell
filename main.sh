@@ -58,6 +58,9 @@ function print_test_result() {
   used_time=$2
   score=$3
 
+  echo $results
+  echo $answers
+
   for i in ${!tests[@]}; do
     test=${tests[$i]}
 

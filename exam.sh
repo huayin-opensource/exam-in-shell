@@ -22,14 +22,36 @@ function random_tests() {
 
   tests=()
   for test in $(ls -1 $tests_folder); do
-      if [ $count -ge $limit ]; then
-          break
-      fi
-      tests+=("$test")
-      count=$(($count + 1))
+    if [ $count -ge $limit ]; then
+      break
+    fi
+    tests+=("$test")
+    count=$(($count + 1))
   done
   for test in ${tests[@]}; do
-      echo $test
+    echo $test
+  done
+}
+
+# 从错题集中随机选取题目
+function random_failed() {
+  limit=$1
+  tests_count=$(read_line $failed_list_file | wc -l)
+  if [ $tests_count -lt $limit ]; then
+    read_line $failed_list_file
+    return
+  fi
+
+  tests=()
+  for test in $(ls -1 $tests_folder); do
+    if [ $count -ge $limit ]; then
+      break
+    fi
+    tests+=("$test")
+    count=$(($count + 1))
+  done
+  for test in ${tests[@]}; do
+    echo $test
   done
 }
 
@@ -49,28 +71,6 @@ function read_line() {
       echo "$line"
     fi
   done <$file
-}
-
-# 从错题集中随机选取题目
-function random_failed() {
-  limit=$1
-  tests_count=$(read_line $failed_list_file | wc -l)
-  if [ $tests_count -lt $limit ]; then
-    read_line $failed_list_file
-    return
-  fi
-
-  count=0
-  for test in $(read_line $failed_list_file); do
-    if [ $count -ge $limit ]; then
-      break
-    fi
-    # 随机数：https://stackoverflow.com/questions/1194882/how-to-generate-random-number-in-bash/1195035
-    if [ $((1 + $RANDOM % 10)) -gt 5 ]; then
-      echo "$test"
-      count=$(($count + 1))
-    fi
-  done
 }
 
 # 添加错题到错题集
@@ -135,8 +135,15 @@ function check_answer() {
   option=$(get_option "$options_file" $answer)
   if [ "$right_answer" = "$option" ]; then
     echo "true"
-
-    [ "$is_review" = 'true' ] && sed -i '' "/$test/d" failed.txt || true
+    if [ "$is_review" = 'true' ]; then
+      echo "正确"
+      os=$(uname -s)
+      if [ "$os" = 'Darwin' ]; then
+        sed -i '' "/$test/d" failed.txt
+      elif [ "$os" = 'Linux' ]; then
+        sed -i "/$test/d" failed.txt
+      fi
+    fi
   else
     echo "false"
     [ "$is_review" = 'false' ] && add_failed "$test" || true
