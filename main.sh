@@ -187,6 +187,7 @@ function menu() {
     tests=()
     answers=()
     results=()
+    score=0
     start_exam
     ;;
   2)
