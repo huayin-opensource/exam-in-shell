@@ -136,7 +136,6 @@ function check_answer() {
   if [ "$right_answer" = "$option" ]; then
     echo "true"
     if [ "$is_review" = 'true' ]; then
-      echo "正确"
       os=$(uname -s)
       if [ "$os" = 'Darwin' ]; then
         sed -i '' "/$test/d" failed.txt

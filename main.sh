@@ -58,9 +58,6 @@ function print_test_result() {
   used_time=$2
   score=$3
 
-  echo $results
-  echo $answers
-
   for i in ${!tests[@]}; do
     test=${tests[$i]}
 
@@ -73,7 +70,7 @@ function print_test_result() {
 
     right_answer=$(cat "$tests_folder/$test/answer.txt")
 
-    [ ${results[$i]} = 'true' ] && result='回答正确' || result='回答错误'
+    [ "${results[$i]}" = 'true' ] && result='回答正确' || result='回答错误'
 
     echo -e "$((i + 1)). ${test} [$result]"
     echo -e "> 题目内容: \n$content"
